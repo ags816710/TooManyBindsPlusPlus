@@ -5,7 +5,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.KeyBinding.Category;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,13 +29,14 @@ public class TMB implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		Config.loadConfig();
-
+		
+		Category category = Category.create(Identifier.of("tmb","tmb"));
 		KeyBinding searchScreenBind;
 		searchScreenBind = new KeyBinding(
 				"key.tmb.search",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_ENTER,
-				"category.tmb");
+				category);
 		KeyBindingHelper.registerKeyBinding(searchScreenBind);
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
 			if (searchScreenBind.wasPressed()) {
@@ -47,7 +50,7 @@ public class TMB implements ModInitializer {
 				"key.tmb.reloadConfig",
 				InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN,
-				"category.tmb");
+				category);
 		KeyBindingHelper.registerKeyBinding(reloadConfigBind);
 		ClientTickEvents.START_CLIENT_TICK.register(client -> {
 			if (reloadConfigBind.wasPressed()) {

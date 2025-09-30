@@ -6,10 +6,12 @@ import java.util.Comparator;
 
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.text.Text;
@@ -124,9 +126,9 @@ public class SearchScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.getKeycode();
 		boolean handled = false;
-
 		if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
 			onAccept();
 			return true;
@@ -148,7 +150,7 @@ public class SearchScreen extends Screen {
 		if (handled)
 			return true;
 
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 
 	@Override
@@ -170,7 +172,10 @@ public class SearchScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		int button = click.button();
+		double mouseX = click.x();
+		double mouseY = click.y();
 		if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
 			int i = 0;
 			int rowSize = getEntryHeight();
@@ -199,7 +204,7 @@ public class SearchScreen extends Screen {
 			}
 		}
 
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(click, doubled);
 	}
 
 	void onQueryChanged(String query) {
@@ -258,12 +263,13 @@ public class SearchScreen extends Screen {
 		ArrayList<BindingEntry> list = new ArrayList<>();
 
 		for (KeyBinding e : KeyBinding.KEYS_BY_ID.values()) {
-			String name = Language.getInstance().get(e.getTranslationKey(), e.getTranslationKey());
-			String categoryName = Language.getInstance().get(e.getCategory(), e.getCategory());
+			String name = Language.getInstance().get(e.getId(), e.getId());
+			String categoryId = "key.category." + e.getCategory().id().toTranslationKey();
+			String categoryName = Language.getInstance().get(categoryId,categoryId);
 
 			BindingEntry be = new BindingEntry(e,
-					e.getTranslationKey(), name,
-					e.getCategory(), categoryName);
+					e.getId(), name,
+					categoryId, categoryName);
 
 			list.add(be);
 		}
